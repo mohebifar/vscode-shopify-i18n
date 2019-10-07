@@ -31,6 +31,10 @@ export function activate(context: vscode.ExtensionContext) {
       .getConfiguration("shopifyI18n")
       .get<string>("preferredLanguage") || "en";
 
+  const diagnostics = vscode.workspace
+    .getConfiguration("shopifyI18n")
+    .get<boolean>("diagnostics");
+
   const filePathResolver = memoize(path =>
     getFilePaths(path, searchPaths, excludePath, preferredLanguage)
   );
@@ -45,36 +49,41 @@ export function activate(context: vscode.ExtensionContext) {
       } as vscode.DocumentFilter)
   );
 
-  const diagnosticProvider = new I18nDiagnosticProvider(cache, documentFilters);
+  if (diagnostics) {
+    const diagnosticProvider = new I18nDiagnosticProvider(
+      cache,
+      documentFilters
+    );
 
-  if (vscode.window.activeTextEditor) {
-    diagnosticProvider.update(vscode.window.activeTextEditor.document);
+    if (vscode.window.activeTextEditor) {
+      diagnosticProvider.update(vscode.window.activeTextEditor.document);
+    }
+
+    context.subscriptions.push(
+      vscode.window.onDidChangeActiveTextEditor(editor => {
+        if (editor) {
+          diagnosticProvider.update(editor.document);
+        }
+      })
+    );
+    context.subscriptions.push(
+      vscode.workspace.onDidCloseTextDocument(e =>
+        diagnosticProvider.clearUri(e.uri)
+      )
+    );
+
+    context.subscriptions.push(
+      vscode.workspace.onDidChangeTextDocument(doc =>
+        diagnosticProvider.update(doc.document)
+      )
+    );
+
+    context.subscriptions.push(
+      vscode.workspace.onDidCloseTextDocument(e =>
+        diagnosticProvider.clearUri(e.uri)
+      )
+    );
   }
-
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(editor => {
-      if (editor) {
-        diagnosticProvider.update(editor.document);
-      }
-    })
-  );
-  context.subscriptions.push(
-    vscode.workspace.onDidCloseTextDocument(e =>
-      diagnosticProvider.clearUri(e.uri)
-    )
-  );
-
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeTextDocument(doc =>
-      diagnosticProvider.update(doc.document)
-    )
-  );
-
-  context.subscriptions.push(
-    vscode.workspace.onDidCloseTextDocument(e =>
-      diagnosticProvider.clearUri(e.uri)
-    )
-  );
 
   context.subscriptions.push(
     vscode.languages.registerDefinitionProvider(

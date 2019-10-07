@@ -2,7 +2,7 @@
 	"name": "shopify-i18n",
 	"displayName": "shopify-i18n",
 	"description": "Better shopify react-i18n experiences with VS Code",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "mohebifar",
 	"engines": {
 		"vscode": "^1.38.0"
@@ -59,6 +59,11 @@
 					"type": "string",
 					"description": "Preferred language code (default: en)",
 					"default": "en"
+				},
+				"shopifyI18n.diagnostics": {
+					"type": "boolean",
+					"description": "Enable diagnostics",
+					"default": true
 				}
 			}
 		}
