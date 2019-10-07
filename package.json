@@ -1,8 +1,8 @@
 {
 	"name": "shopify-i18n",
 	"displayName": "shopify-i18n",
-	"description": "Auto completion for i18n keys for shopify",
-	"version": "0.0.1",
+	"description": "Better shopify react-i18n experiences with VS Code",
+	"version": "0.0.2",
 	"publisher": "mohebifar",
 	"engines": {
 		"vscode": "^1.38.0"
@@ -17,6 +17,10 @@
 		"workspaceContains:**/locales/*.json"
 	],
 	"main": "./out/extension.js",
+	"repository": {
+		"url": "https://github.com/mohebifar/vscode-shopify-i18n",
+		"type": "git"
+	},
 	"contributes": {
 		"configuration": {
 			"type": "object",
