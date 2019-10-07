@@ -1,0 +1,90 @@
+{
+	"name": "shopify-i18n",
+	"displayName": "shopify-i18n",
+	"description": "Auto completion for i18n keys for shopify",
+	"version": "0.0.1",
+	"publisher": "mohebifar",
+	"engines": {
+		"vscode": "^1.38.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguage:typescript",
+		"onLanguage:javascript",
+		"workspaceContains:**/translations/*.json",
+		"workspaceContains:**/locales/*.json"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "Shopify I18n",
+			"properties": {
+				"shopifyI18n.languageIdentifiers": {
+					"type": "array",
+					"description": "A list of language identifiers in which i18n expressions are evaluated",
+					"items": {
+						"type": "string",
+						"description": "Language identifier"
+					},
+					"default": [
+						"typescript",
+						"javascript",
+						"typescriptreact"
+					]
+				},
+				"shopifyI18n.searchPaths": {
+					"type": "array",
+					"description": "A list of search paths for translation files",
+					"items": {
+						"type": "string",
+						"description": "Search path"
+					},
+					"default": [
+						"${fileDirname}/translations/${preferredLanguage}.json",
+						"app/locales/${preferredLanguage}.json"
+					]
+				},
+				"shopifyI18n.excludePath": {
+					"type": "string",
+					"description": "Exclude path"
+				},
+				"shopifyI18n.preferredLanguage": {
+					"type": "string",
+					"description": "Preferred language code (default: en)",
+					"default": "en"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.6",
+		"@types/node": "^10.12.21",
+		"@types/vscode": "^1.38.0",
+		"glob": "^7.1.4",
+		"mocha": "^6.1.4",
+		"ts-loader": "^6.2.0",
+		"tslint": "^5.12.1",
+		"typescript": "^3.3.1",
+		"vscode-test": "^1.2.0",
+		"webpack": "^4.41.0",
+		"webpack-cli": "^3.3.9"
+	},
+	"dependencies": {
+		"@types/dot-object": "^1.7.0",
+		"@types/json-to-ast": "^2.1.0",
+		"@types/lodash": "^4.14.141",
+		"dot-object": "^1.9.0",
+		"json-to-ast": "^2.1.0",
+		"lodash": "^4.17.15"
+	}
+}
