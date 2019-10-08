@@ -4,6 +4,7 @@ import { flatten } from "lodash";
 import jsonToAst from "json-to-ast";
 
 interface TranslationRecord {
+  markdownValue?: string;
   value?: string;
   loc?: jsonToAst.Location;
 }
@@ -13,6 +14,8 @@ export interface TranslationDictionary {
 }
 
 const i18nCallRegex = /i18n\.t(ranslate)?\([\r\n\s]*[\"\']([\w-\.]*)[\"\'\.]/g;
+
+const pluralizationRules = ["zero", "one", "two", "few", "many", "other"];
 
 export async function getFilePaths(
   document: TextDocument,
@@ -94,10 +97,18 @@ export function flattenJsonAst(
       (current, node) => ({
         ...current,
         [[...path, node.key.value].join(".")]: { loc: node.key.loc },
-        ...flattenJsonAst({ ...node.value, loc: node.key.loc }, [
-          ...path,
-          node.key.value
-        ])
+        ...(node.value.type === "Object" && isPluralTranslation(node.value)
+          ? {
+              [[...path, node.key.value].join(".")]: {
+                loc: node.key.loc,
+                markdownValue: getPluralMarkdown(node.value.children),
+                value: "[Plural]"
+              }
+            }
+          : flattenJsonAst({ ...node.value, loc: node.key.loc }, [
+              ...path,
+              node.key.value
+            ]))
       }),
       {} as TranslationDictionary
     );
@@ -109,4 +120,19 @@ export function flattenJsonAst(
       value: (object as jsonToAst.LiteralNode).value
     } as TranslationRecord
   };
+}
+
+function isPluralTranslation(object: jsonToAst.ObjectNode) {
+  return object.children.every(({ key }) =>
+    pluralizationRules.includes(key.value)
+  );
+}
+
+function getPluralMarkdown(children: jsonToAst.PropertyNode[]) {
+  return children
+    .map(
+      ({ key, value }) =>
+        `**${key.value}**: ${value.type === "Literal" ? value.value : ""}`
+    )
+    .join("\n\n");
 }

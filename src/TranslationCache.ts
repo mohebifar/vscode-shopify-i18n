@@ -18,6 +18,7 @@ interface TranslationResult {
   file: string;
   key: string;
   value?: string;
+  markdownValue?: string;
   location: Location;
 }
 
@@ -93,7 +94,7 @@ class TranslationCache {
       ) {
         if (translationKeys[j].startsWith(prefix)) {
           const key = translationKeys[j];
-          const { value, loc } = dictionary[key];
+          const { markdownValue, value, loc } = dictionary[key];
           const range = loc
             ? new Range(
                 new Position(loc.start.line - 1, loc.start.column - 1),
@@ -106,7 +107,8 @@ class TranslationCache {
             file,
             key,
             location,
-            value
+            value,
+            markdownValue
           });
         }
       }

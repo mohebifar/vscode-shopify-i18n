@@ -40,7 +40,12 @@ class I18nHoverProvider implements HoverProvider {
       return;
     }
 
-    const markdownText = new MarkdownString(`**${translation.value}**\n\n*Defined in* ${translation.file}`);
+    const translationText =
+      translation.markdownValue || `**${translation.value}**`;
+
+    const markdownText = new MarkdownString(
+      `${translationText}\n\n*Defined in* ${translation.file}`
+    );
     markdownText.isTrusted = true;
 
     return new Hover(markdownText, keyRange);
