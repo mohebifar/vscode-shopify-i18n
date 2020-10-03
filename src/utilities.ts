@@ -1,4 +1,4 @@
-import { workspace, TextDocument, Position, Range, Location } from "vscode";
+import { workspace, TextDocument, Position, Range, Uri } from "vscode";
 import { dirname, relative } from "path";
 import { flatten } from "lodash";
 import jsonToAst from "json-to-ast";
@@ -29,16 +29,30 @@ export async function getFilePaths(
   );
 
   const promises = searchPaths
-    .map(pattern =>
+    .map((pattern) =>
       pattern
         .replace("${fileDirname}", relativeDirname)
         .replace("${preferredLanguage}", preferredLanguage)
     )
-    .map(pattern => workspace.findFiles(pattern, excludePath));
+    .map((pattern) => workspace.findFiles(pattern, excludePath));
 
   const allValues = await Promise.all(promises);
 
-  return flatten(allValues).map(({ path }) => path);
+  let currentDirSearch = relativeDirname;
+  let foundRecursiveResult: Uri[];
+  do {
+    foundRecursiveResult = await workspace.findFiles(
+      `${currentDirSearch}/{locales,translations}/${preferredLanguage}.json`,
+      excludePath
+    );
+  } while (
+    foundRecursiveResult.length === 0 &&
+    currentDirSearch !== (currentDirSearch = dirname(currentDirSearch))
+  );
+
+  return flatten([...allValues, ...foundRecursiveResult]).map(
+    ({ path }) => path
+  );
 }
 
 export function getI18nCallRangeAtPosition(
