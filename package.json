@@ -94,6 +94,6 @@
 		"@types/lodash": "^4.14.141",
 		"dot-object": "^1.9.0",
 		"json-to-ast": "^2.1.0",
-		"lodash": "^4.17.15"
+		"lodash": "^4.17.21"
 	}
 }
